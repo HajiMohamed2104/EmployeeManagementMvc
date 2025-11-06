@@ -1,0 +1,159 @@
+@model IEnumerable<WebApplication1.DTOs.EmployeeDto>
+@{
+    ViewData["Title"] = "Employee Management";
+}
+
+<div class="container mt-4">
+    <h1>Employee Management</h1>
+    
+    <!-- Search and Filter Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Search and Filter Employees</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="Index" method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label for="searchString" class="form-label">Search</label>
+                    <input type="text" class="form-control" id="searchString" name="searchString" 
+                           value="@ViewBag.CurrentFilter" placeholder="Search employees...">
+                </div>
+                <div class="col-md-3">
+                    <label for="departmentFilter" class="form-label">Department</label>
+                    <select class="form-select" id="departmentFilter" name="departmentFilter">
+                        <option value="">All Departments</option>
+                        @if (ViewBag.Departments != null)
+                        {
+                            @foreach (var dept in ViewBag.Departments)
+                            {
+                                <option value="@dept.Text" selected="@(dept.Text == ViewBag.DepartmentFilter)">@dept.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="minSalary" class="form-label">Min Salary</label>
+                    <input type="number" class="form-control" id="minSalary" name="minSalary" 
+                           value="@ViewBag.MinSalary" placeholder="0">
+                </div>
+                <div class="col-md-2">
+                    <label for="maxSalary" class="form-label">Max Salary</label>
+                    <input type="number" class="form-control" id="maxSalary" name="maxSalary" 
+                           value="@ViewBag.MaxSalary" placeholder="100000">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">&nbsp;</label>
+                    <div>
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <a asp-action="Index" class="btn btn-secondary">Clear</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mb-3">
+        <a asp-action="Create" class="btn btn-success">
+            <i class="fas fa-plus"></i> Add New Employee
+        </a>
+        <a asp-action="Statistics" class="btn btn-info">
+            <i class="fas fa-chart-bar"></i> View Statistics
+        </a>
+    </div>
+
+    <!-- Employee Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5>Employee List</h5>
+        </div>
+        <div class="card-body">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Employee Number</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Department</th>
+                                <th>Position</th>
+                                <th>Salary</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var employee in Model)
+                            {
+                                <tr>
+                                    <td>@employee.EmployeeNumber</td>
+                                    <td>
+                                        <strong>@employee.FullName</strong>
+                                        <br />
+                                        <small class="text-muted">Age: @employee.Age</small>
+                                    </td>
+                                    <td>@employee.Email</td>
+                                    <td>@employee.DepartmentName</td>
+                                    <td>@employee.Position</td>
+                                    <td>
+                                        @employee.Salary.ToString("C")
+                                        <br />
+                                        <small class="text-muted">Annual: @employee.AnnualSalary.ToString("C")</small>
+                                    </td>
+                                    <td>
+                                        @if (employee.IsActive)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="Details" asp-route-id="@employee.Id" 
+                                               class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@employee.Id" 
+                                               class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@employee.Id" 
+                                               class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> No employees found matching your criteria.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Add any client-side functionality here
+        $(document).ready(function() {
+            // Example: Add confirmation for delete actions
+            $('a[href*="Delete"]').on('click', function(e) {
+                if (!confirm('Are you sure you want to delete this employee?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}

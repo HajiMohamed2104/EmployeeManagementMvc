@@ -1,0 +1,238 @@
+@model WebApplication1.Controllers.StatisticsViewModel
+@{
+    ViewData["Title"] = "Employee Statistics";
+}
+
+<div class="container mt-4">
+    <h1>Employee Statistics</h1>
+    <hr />
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5>Total Employees</h5>
+                    <h2>@Model.TotalEmployees</h2>
+                    <small>All employees in the system</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5>Departments</h5>
+                    <h2>@Model.EmployeeCountByDepartment.Count</h2>
+                    <small>Active departments</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5>Top Earners</h5>
+                    <h2>@Model.TopEarners.Count()</h2>
+                    <small>Highest paid employees</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5>Promotion Eligible</h5>
+                    <h2>@Model.EligibleForPromotion.Count()</h2>
+                    <small>Ready for promotion</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Department Distribution Chart -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Employee Count by Department</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.EmployeeCountByDepartment != null && Model.EmployeeCountByDepartment.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Department</th>
+                                        <th>Employee Count</th>
+                                        <th>Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var dept in Model.EmployeeCountByDepartment)
+                                    {
+                                        var percentage = Model.TotalEmployees > 0 ? (dept.Value * 100.0 / Model.TotalEmployees) : 0;
+                                        <tr>
+                                            <td>@dept.Key</td>
+                                            <td>@dept.Value</td>
+                                            <td>
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar" role="progressbar" 
+                                                         style="width: @percentage.ToString("0.0")%">
+                                                        @percentage.ToString("0.1")%
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> No department data available.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Earners -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Top Earners</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.TopEarners != null && Model.TopEarners.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>Department</th>
+                                        <th>Monthly Salary</th>
+                                        <th>Annual Salary</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var employee in Model.TopEarners)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@employee.FullName</strong>
+                                                <br />
+                                                <small class="text-muted">@employee.EmployeeNumber</small>
+                                            </td>
+                                            <td>@employee.DepartmentName</td>
+                                            <td>@employee.Salary.ToString("C")</td>
+                                            <td>@employee.AnnualSalary.ToString("C")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> No salary data available.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <!-- Promotion Eligible Employees -->
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Employees Eligible for Promotion</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.EligibleForPromotion != null && Model.EligibleForPromotion.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>Department</th>
+                                        <th>Position</th>
+                                        <th>Years of Service</th>
+                                        <th>Current Salary</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var employee in Model.EligibleForPromotion)
+                                    {
+                                        var yearsOfService = DateTime.Now.Year - employee.HireDate.Year;
+                                        <tr>
+                                            <td>
+                                                <strong>@employee.FullName</strong>
+                                                <br />
+                                                <small class="text-muted">@employee.EmployeeNumber</small>
+                                            </td>
+                                            <td>@employee.DepartmentName</td>
+                                            <td>@employee.Position</td>
+                                            <td>@yearsOfService years</td>
+                                            <td>@employee.Salary.ToString("C")</td>
+                                            <td>
+                                                <span class="badge bg-success">Eligible</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> No employees are currently eligible for promotion.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn btn-primary">
+                    <i class="fas fa-users"></i> View All Employees
+                </a>
+                <a asp-action="Create" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Add New Employee
+                </a>
+                <button onclick="window.print()" class="btn btn-secondary">
+                    <i class="fas fa-print"></i> Print Statistics
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Add any interactive functionality for statistics
+            console.log('Statistics page loaded');
+            
+            // Example: Add hover effects to progress bars
+            $('.progress-bar').hover(
+                function() {
+                    $(this).addClass('progress-bar-striped progress-bar-animated');
+                },
+                function() {
+                    $(this).removeClass('progress-bar-striped progress-bar-animated');
+                }
+            );
+        });
+    </script>
+}

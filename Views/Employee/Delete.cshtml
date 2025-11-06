@@ -1,0 +1,174 @@
+@model WebApplication1.DTOs.EmployeeDto
+@{
+    ViewData["Title"] = "Delete Employee";
+}
+
+<div class="container mt-4">
+    <h1>Delete Employee</h1>
+    <hr />
+    
+    @if (Model != null)
+    {
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h5><i class="fas fa-exclamation-triangle"></i> Confirm Deletion</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-danger">
+                            <strong>Warning:</strong> Are you sure you want to delete this employee? This action cannot be undone.
+                        </div>
+                        
+                        <h6 class="mt-3 mb-3">Employee Information</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td><strong>Employee Number:</strong></td>
+                                        <td>@Model.EmployeeNumber</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Full Name:</strong></td>
+                                        <td>@Model.FullName</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Email:</strong></td>
+                                        <td>@Model.Email</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Phone:</strong></td>
+                                        <td>@Model.PhoneNumber</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td><strong>Department:</strong></td>
+                                        <td>@Model.DepartmentName</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Position:</strong></td>
+                                        <td>@Model.Position</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Monthly Salary:</strong></td>
+                                        <td>@Model.Salary.ToString("C")</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Status:</strong></td>
+                                        <td>
+                                            @if (Model.IsActive)
+                                            {
+                                                <span class="badge bg-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Deletion Form -->
+                        <form asp-action="Delete" method="post" class="mt-4">
+                            <input type="hidden" asp-for="Id" />
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i> Confirm Delete
+                                </button>
+                                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">
+                                    <i class="fas fa-eye"></i> View Details
+                                </a>
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Back to List
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Impact Information -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Deletion Impact</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>What will be deleted:</h6>
+                        <ul class="text-muted small">
+                            <li>Employee personal information</li>
+                            <li>Employment records</li>
+                            <li>Salary information</li>
+                            <li>Department assignments</li>
+                        </ul>
+                        
+                        <div class="alert alert-warning small">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Note:</strong> This action is permanent and cannot be reversed.
+                        </div>
+                        
+                        <h6>Alternative Options:</h6>
+                        <ul class="text-muted small">
+                            <li>Consider deactivating the employee instead</li>
+                            <li>Transfer to another department if needed</li>
+                            <li>Update position rather than delete</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5>Employee Stats</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <h4 class="text-primary">@Model.Age</h4>
+                                <small class="text-muted">Age</small>
+                            </div>
+                            <div class="col-6">
+                                <h4 class="text-success">@(DateTime.Now.Year - Model.HireDate.Year)</h4>
+                                <small class="text-muted">Years Service</small>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="text-center">
+                            <h5 class="text-danger">@Model.AnnualSalary.ToString("C0")</h5>
+                            <small class="text-muted">Annual Compensation</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i> Employee not found.
+        </div>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Add confirmation for delete button
+            $('form').submit(function(e) {
+                var confirmMsg = 'Are you absolutely sure you want to delete this employee?\n\nThis action cannot be undone!';
+                if (!confirm(confirmMsg)) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+    </script>
+}

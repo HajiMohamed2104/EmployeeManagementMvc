@@ -1,0 +1,165 @@
+@model WebApplication1.DTOs.EmployeeDto
+@{
+    ViewData["Title"] = "Employee Details";
+}
+
+<div class="container mt-4">
+    <h1>Employee Details</h1>
+    <hr />
+    
+    @if (Model != null)
+    {
+        <div class="row">
+            <!-- Employee Information Card -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>Employee Information</h5>
+                        <div>
+                            @if (Model.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Inactive</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Personal Information</h6>
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td><strong>Employee Number:</strong></td>
+                                        <td>@Model.EmployeeNumber</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Full Name:</strong></td>
+                                        <td>@Model.FullName</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Age:</strong></td>
+                                        <td>@Model.Age years</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Email:</strong></td>
+                                        <td><a href="mailto:@Model.Email">@Model.Email</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Phone:</strong></td>
+                                        <td>@Model.PhoneNumber</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Date of Birth:</strong></td>
+                                        <td>@Model.DateOfBirth.ToString("MMMM dd, yyyy")</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Employment Information</h6>
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td><strong>Department:</strong></td>
+                                        <td>@Model.DepartmentName</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Position:</strong></td>
+                                        <td>@Model.Position</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Hire Date:</strong></td>
+                                        <td>@Model.HireDate.ToString("MMMM dd, yyyy")</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Monthly Salary:</strong></td>
+                                        <td>@Model.Salary.ToString("C")</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Annual Salary:</strong></td>
+                                        <td>@Model.AnnualSalary.ToString("C")</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Years of Service:</strong></td>
+                                        <td>@(DateTime.Now.Year - Model.HireDate.Year) years</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Actions Card -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                                <i class="fas fa-edit"></i> Edit Employee
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Delete Employee
+                            </a>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to List
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Stats Card -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5>Quick Stats</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <h4 class="text-primary">@Model.Age</h4>
+                                <small class="text-muted">Age</small>
+                            </div>
+                            <div class="col-6">
+                                <h4 class="text-success">@(DateTime.Now.Year - Model.HireDate.Year)</h4>
+                                <small class="text-muted">Years Service</small>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <h5 class="text-info">@Model.Salary.ToString("C0")</h5>
+                                <small class="text-muted">Monthly</small>
+                            </div>
+                            <div class="col-6">
+                                <h5 class="text-warning">@Model.AnnualSalary.ToString("C0")</h5>
+                                <small class="text-muted">Annual</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i> Employee not found.
+        </div>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Add any interactive functionality here
+            console.log('Employee details loaded for ID: @Model?.Id');
+        });
+    </script>
+}
