@@ -1,9 +1,6 @@
 namespace WebApplication1.Exceptions;
 
-/// <summary>
-/// Custom exception for when an employee is not found
-/// Demonstrates specific exception handling
-/// </summary>
+
 public class EmployeeNotFoundException : EmployeeManagementException
 {
     public EmployeeNotFoundException() : base("Employee not found")

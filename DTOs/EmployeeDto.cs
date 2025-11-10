@@ -2,10 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication1.DTOs;
 
-/// <summary>
-/// Employee Data Transfer Object demonstrating DTO pattern
-/// Used for transferring data between layers
-/// </summary>
 public class EmployeeDto
 {
     public int Id { get; set; }
@@ -50,13 +46,11 @@ public class EmployeeDto
 
     public bool IsActive { get; set; } = true;
 
-    // Additional properties for display purposes
     public string FullName => $"{FirstName} {LastName}";
     public int Age => CalculateAge();
     public decimal AnnualSalary => Salary * 12;
     public string DepartmentName { get; set; } = string.Empty;
 
-    // Method demonstrating business logic in DTO
     private int CalculateAge()
     {
         var today = DateTime.Today;

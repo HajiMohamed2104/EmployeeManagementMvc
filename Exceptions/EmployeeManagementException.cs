@@ -1,9 +1,5 @@
 namespace WebApplication1.Exceptions;
 
-/// <summary>
-/// Custom base exception for Employee Management System
-/// Demonstrates custom exception creation and inheritance
-/// </summary>
 public class EmployeeManagementException : Exception
 {
     public EmployeeManagementException() : base()
@@ -18,6 +14,5 @@ public class EmployeeManagementException : Exception
     {
     }
 
-    // Additional property for error code
     public int ErrorCode { get; set; }
 }

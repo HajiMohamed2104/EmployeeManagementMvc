@@ -5,10 +5,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebApplication1.Migrations
 {
-    /// <inheritdoc />
     public partial class FixManagerRelationship : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
@@ -45,7 +43,6 @@ namespace WebApplication1.Migrations
                 value: new DateTime(2025, 11, 6, 15, 23, 4, 156, DateTimeKind.Local).AddTicks(4140));
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(

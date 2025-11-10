@@ -15,7 +15,6 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        // Redirect to Employee Management as the main feature
         return RedirectToAction("Index", "Employee");
     }
 

@@ -3,14 +3,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
+#pragma warning disable CA1814 
 namespace WebApplication1.Migrations
 {
-    /// <inheritdoc />
     public partial class FixTableNames : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -146,7 +143,6 @@ namespace WebApplication1.Migrations
                 column: "ManagerId1");
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

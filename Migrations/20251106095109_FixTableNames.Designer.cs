@@ -14,7 +14,6 @@ namespace WebApplication1.Migrations
     [Migration("20251106095109_FixTableNames")]
     partial class FixTableNames
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

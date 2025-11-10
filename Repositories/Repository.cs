@@ -4,10 +4,6 @@ using WebApplication1.Exceptions;
 
 namespace WebApplication1.Repositories;
 
-/// <summary>
-/// Generic repository implementation demonstrating Repository Pattern, async/await, and exception handling
-/// </summary>
-/// <typeparam name="T">The type of entity</typeparam>
 public class Repository<T> : IRepository<T> where T : class
 {
     protected readonly ApplicationDbContext _context;
@@ -19,9 +15,6 @@ public class Repository<T> : IRepository<T> where T : class
         _dbSet = _context.Set<T>();
     }
 
-    /// <summary>
-    /// Get entity by ID with async/await
-    /// </summary>
     public virtual async Task<T?> GetByIdAsync(int id)
     {
         try
@@ -34,9 +27,7 @@ public class Repository<T> : IRepository<T> where T : class
         }
     }
 
-    /// <summary>
-    /// Get all entities with async/await
-    /// </summary>
+    
     public virtual async Task<IEnumerable<T>> GetAllAsync()
     {
         try
@@ -49,9 +40,7 @@ public class Repository<T> : IRepository<T> where T : class
         }
     }
 
-    /// <summary>
-    /// Get all entities with ordering using LINQ
-    /// </summary>
+    
     public virtual async Task<IEnumerable<T>> GetAllAsync(System.Linq.Expressions.Expression<Func<T, object>> orderBy, bool ascending = true)
     {
         try
@@ -68,9 +57,7 @@ public class Repository<T> : IRepository<T> where T : class
         }
     }
 
-    /// <summary>
-    /// Find entities based on predicate with LINQ
-    /// </summary>
+   
     public virtual async Task<IEnumerable<T>> FindAsync(System.Linq.Expressions.Expression<Func<T, bool>> predicate)
     {
         try
@@ -83,10 +70,7 @@ public class Repository<T> : IRepository<T> where T : class
         }
     }
 
-    /// <summary>
-    /// Add new entity with async/await
-    /// </summary>
-    public virtual async Task<T> AddAsync(T entity)
+        public virtual async Task<T> AddAsync(T entity)
     {
         try
         {
@@ -105,9 +89,7 @@ public class Repository<T> : IRepository<T> where T : class
         }
     }
 
-    /// <summary>
-    /// Update existing entity with async/await
-    /// </summary>
+    
     public virtual async Task UpdateAsync(T entity)
     {
         try
@@ -126,9 +108,7 @@ public class Repository<T> : IRepository<T> where T : class
         }
     }
 
-    /// <summary>
-    /// Delete entity by ID with async/await
-    /// </summary>
+    
     public virtual async Task DeleteAsync(int id)
     {
         try
@@ -146,9 +126,7 @@ public class Repository<T> : IRepository<T> where T : class
         }
     }
 
-    /// <summary>
-    /// Count entities with async/await
-    /// </summary>
+   
     public virtual async Task<int> CountAsync()
     {
         try

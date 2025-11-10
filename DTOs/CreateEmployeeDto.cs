@@ -2,10 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication1.DTOs;
 
-/// <summary>
-/// Create Employee DTO demonstrating validation and data annotations
-/// Used for creating new employees
-/// </summary>
 public class CreateEmployeeDto
 {
     public int Id { get; set; }
@@ -40,11 +36,6 @@ public class CreateEmployeeDto
     [DataType(DataType.Date)]
     [Display(Name = "Date of Birth")]
     public DateTime DateOfBirth { get; set; }
-
-    [Required(ErrorMessage = "Department is required")]
-    [StringLength(50)]
-    [Display(Name = "Department")]
-    public string Department { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Position is required")]
     [StringLength(100)]

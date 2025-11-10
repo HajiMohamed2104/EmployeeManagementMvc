@@ -14,7 +14,6 @@ namespace WebApplication1.Migrations
     [Migration("20251106095304_FixManagerRelationship")]
     partial class FixManagerRelationship
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

@@ -2,9 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication1.Models.Entities;
 
-/// <summary>
-/// Base class demonstrating encapsulation and implementation of IPerson interface
-/// </summary>
 public abstract class Person : IPerson
 {
     public int Id { get; set; }
@@ -30,17 +27,14 @@ public abstract class Person : IPerson
     [DataType(DataType.Date)]
     public DateTime DateOfBirth { get; set; }
 
-    // Protected field demonstrating encapsulation
     protected DateTime _createdDate = DateTime.Now;
 
-    // Public property with private setter demonstrating encapsulation
     public DateTime CreatedDate 
     { 
         get { return _createdDate; }
         private set { _createdDate = value; }
     }
 
-    // Virtual method allowing for polymorphic behavior
     public virtual int CalculateAge()
     {
         var today = DateTime.Today;
@@ -49,12 +43,10 @@ public abstract class Person : IPerson
         return age;
     }
 
-    // Virtual method for polymorphism
     public virtual string GetFullName()
     {
         return $"{FirstName} {LastName}";
     }
 
-    // Abstract method that must be implemented by derived classes
     public abstract string GetRoleDescription();
 }

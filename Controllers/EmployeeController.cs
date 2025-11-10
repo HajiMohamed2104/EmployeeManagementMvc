@@ -7,12 +7,9 @@ using WebApplication1.DTOs;
 using WebApplication1.Models.Entities;
 using WebApplication1.Repositories;
 using WebApplication1.Exceptions;
+using WebApplication1.ViewModels;
 
 namespace WebApplication1.Controllers;
-
-/// <summary>
-/// Employee Controller demonstrating CRUD operations, async/await, LINQ, and exception handling
-/// </summary>
 public class EmployeeController : Controller
 {
     private readonly IEmployeeRepository _employeeRepository;
@@ -35,17 +32,12 @@ public class EmployeeController : Controller
         _logger = logger;
     }
 
-    // GET: Employee
-    /// <summary>
-    /// Index action demonstrating async/await and LINQ
-    /// </summary>
     public async Task<IActionResult> Index(string searchString, string departmentFilter, decimal? minSalary, decimal? maxSalary)
     {
         try
         {
             IEnumerable<Employee> employees;
 
-            // Demonstrate LINQ filtering based on parameters
             if (!string.IsNullOrEmpty(searchString))
             {
                 employees = await _employeeRepository.SearchEmployeesAsync(searchString);
@@ -63,10 +55,8 @@ public class EmployeeController : Controller
                 employees = await _employeeRepository.GetAllAsync();
             }
 
-            // Map entities to DTOs using AutoMapper
             var employeeDtos = _mapper.Map<IEnumerable<EmployeeDto>>(employees);
 
-            // Pass filter data to view
             ViewBag.Departments = await GetDepartmentSelectList();
             ViewBag.CurrentFilter = searchString;
             ViewBag.DepartmentFilter = departmentFilter;
@@ -82,11 +72,6 @@ public class EmployeeController : Controller
             return View(new List<EmployeeDto>());
         }
     }
-
-    // GET: Employee/Details/5
-    /// <summary>
-    /// Details action demonstrating async/await and exception handling
-    /// </summary>
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -102,7 +87,6 @@ public class EmployeeController : Controller
                 return NotFound();
             }
 
-            // Map entity to DTO using AutoMapper
             var employeeDto = _mapper.Map<EmployeeDto>(employee);
             return View(employeeDto);
         }
@@ -138,10 +122,6 @@ public class EmployeeController : Controller
         }
     }
 
-    // POST: Employee/Create
-    /// <summary>
-    /// Create POST action demonstrating validation, async/await, and exception handling
-    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateEmployeeDto createEmployeeDto)
@@ -150,7 +130,6 @@ public class EmployeeController : Controller
         {
             if (ModelState.IsValid)
             {
-                // Check if employee number is unique using LINQ
                 var isUnique = await _employeeRepository.IsEmployeeNumberUniqueAsync(createEmployeeDto.EmployeeNumber);
                 if (!isUnique)
                 {
@@ -159,10 +138,13 @@ public class EmployeeController : Controller
                     return View(createEmployeeDto);
                 }
 
-                // Map DTO to entity using AutoMapper
                 var employee = _mapper.Map<Employee>(createEmployeeDto);
+                
+                if (createEmployeeDto.DepartmentId.HasValue)
+                {
+                    employee.Department = await _context.Departments.FindAsync(createEmployeeDto.DepartmentId.Value);
+                }
 
-                // Add employee using repository pattern
                 await _employeeRepository.AddAsync(employee);
 
                 _logger.LogInformation("Employee created successfully: {Id}", employee.Id);
@@ -186,11 +168,6 @@ public class EmployeeController : Controller
         ViewBag.Departments = await GetDepartmentSelectList();
         return View(createEmployeeDto);
     }
-
-    // GET: Employee/Edit/5
-    /// <summary>
-    /// Edit GET action demonstrating async/await
-    /// </summary>
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
@@ -206,7 +183,6 @@ public class EmployeeController : Controller
                 return NotFound();
             }
 
-            // Map entity to DTO using AutoMapper
             var employeeDto = _mapper.Map<CreateEmployeeDto>(employee);
             ViewBag.Departments = await GetDepartmentSelectList();
             return View(employeeDto);
@@ -224,10 +200,6 @@ public class EmployeeController : Controller
         }
     }
 
-    // POST: Employee/Edit/5
-    /// <summary>
-    /// Edit POST action demonstrating validation, async/await, and exception handling
-    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, CreateEmployeeDto createEmployeeDto)
@@ -241,14 +213,12 @@ public class EmployeeController : Controller
         {
             if (ModelState.IsValid)
             {
-                // Get existing employee
                 var existingEmployee = await _employeeRepository.GetByIdAsync(id);
                 if (existingEmployee == null)
                 {
                     return NotFound();
                 }
 
-                // Check if employee number is unique (excluding current employee)
                 var isUnique = await _employeeRepository.IsEmployeeNumberUniqueAsync(createEmployeeDto.EmployeeNumber, id);
                 if (!isUnique)
                 {
@@ -257,10 +227,17 @@ public class EmployeeController : Controller
                     return View(createEmployeeDto);
                 }
 
-                // Update properties using AutoMapper
                 _mapper.Map(createEmployeeDto, existingEmployee);
+                
+                if (createEmployeeDto.DepartmentId.HasValue)
+                {
+                    existingEmployee.Department = await _context.Departments.FindAsync(createEmployeeDto.DepartmentId.Value);
+                }
+                else
+                {
+                    existingEmployee.Department = null;
+                }
 
-                // Update employee using repository pattern
                 await _employeeRepository.UpdateAsync(existingEmployee);
 
                 _logger.LogInformation("Employee updated successfully: {Id}", id);
@@ -290,11 +267,7 @@ public class EmployeeController : Controller
         return View(createEmployeeDto);
     }
 
-    // GET: Employee/Delete/5
-    /// <summary>
-    /// Delete GET action demonstrating async/await
-    /// </summary>
-    public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
         {
@@ -309,7 +282,6 @@ public class EmployeeController : Controller
                 return NotFound();
             }
 
-            // Map entity to DTO using AutoMapper
             var employeeDto = _mapper.Map<EmployeeDto>(employee);
             return View(employeeDto);
         }
@@ -326,10 +298,6 @@ public class EmployeeController : Controller
         }
     }
 
-    // POST: Employee/Delete/5
-    /// <summary>
-    /// Delete POST action demonstrating async/await and exception handling
-    /// </summary>
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
@@ -353,15 +321,10 @@ public class EmployeeController : Controller
         }
     }
 
-    // GET: Employee/Statistics
-    /// <summary>
-    /// Statistics action demonstrating LINQ aggregation and grouping
-    /// </summary>
     public async Task<IActionResult> Statistics()
     {
         try
         {
-            // Demonstrate LINQ operations
             var employeeCountByDepartment = await _employeeRepository.GetEmployeeCountByDepartmentAsync();
             var topEarners = await _employeeRepository.GetTopEarnersAsync(5);
             var eligibleForPromotion = await _employeeRepository.GetEmployeesEligibleForPromotionAsync();
@@ -384,23 +347,9 @@ public class EmployeeController : Controller
         }
     }
 
-    /// <summary>
-    /// Helper method to get department select list
-    /// </summary>
     private async Task<SelectList> GetDepartmentSelectList()
     {
         var departments = await _departmentRepository.GetAllAsync();
         return new SelectList(departments, "Id", "Name");
     }
-}
-
-/// <summary>
-/// Statistics view model for demonstrating view model pattern
-/// </summary>
-public class StatisticsViewModel
-{
-    public Dictionary<string, int> EmployeeCountByDepartment { get; set; } = new();
-    public IEnumerable<EmployeeDto> TopEarners { get; set; } = new List<EmployeeDto>();
-    public IEnumerable<EmployeeDto> EligibleForPromotion { get; set; } = new List<EmployeeDto>();
-    public int TotalEmployees { get; set; }
 }
