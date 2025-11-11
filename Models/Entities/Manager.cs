@@ -16,7 +16,7 @@ public class Manager : Employee
 
     public override string GetRoleDescription()
     {
-        return $"{ManagementLevel} Manager overseeing {GetManagedEmployeeCount()} employees in {Department?.Name ?? "No Department"} department";
+        return $"{ManagementLevel ?? "Manager"} overseeing {GetManagedEmployeeCount()} employees in {Department?.Name ?? "No Department"} department";
     }
 
     public override string GetFullName()
@@ -57,11 +57,12 @@ public class Manager : Employee
             throw new InvalidOperationException("A manager cannot manage themselves");
         }
 
-        if (ManagedEmployees.Any(e => e.Id == employee.Id))
+        if (ManagedEmployees != null && ManagedEmployees.Any(e => e != null && e.Id == employee.Id))
         {
             throw new InvalidOperationException("Employee is already managed by this manager");
         }
 
+        ManagedEmployees ??= new List<Employee>();
         ManagedEmployees.Add(employee);
     }
 }

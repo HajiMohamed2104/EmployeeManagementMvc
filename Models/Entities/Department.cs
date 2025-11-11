@@ -26,11 +26,11 @@ public class Department
 
     public int GetEmployeeCount()
     {
-        return Employees?.Count ?? 0;
+        return Employees?.Count(e => e != null) ?? 0;
     }
 
     public decimal GetTotalSalaryExpense()
     {
-        return Employees?.Where(e => e.IsActive).Sum(e => e.GetAnnualSalary()) ?? 0;
+        return Employees?.Where(e => e != null && e.IsActive).Sum(e => e.GetAnnualSalary()) ?? 0;
     }
 }

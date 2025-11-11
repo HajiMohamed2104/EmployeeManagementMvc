@@ -45,11 +45,14 @@ public class EmployeeDto
     public decimal Salary { get; set; }
 
     public bool IsActive { get; set; } = true;
+    public int? DepartmentId { get; set; }
+    public int? ManagerId { get; set; }
 
     public string FullName => $"{FirstName} {LastName}";
     public int Age => CalculateAge();
     public decimal AnnualSalary => Salary * 12;
     public string DepartmentName { get; set; } = string.Empty;
+    public string ManagerName { get; set; } = string.Empty;
 
     private int CalculateAge()
     {

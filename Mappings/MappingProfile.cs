@@ -24,6 +24,12 @@ public class MappingProfile : Profile
         CreateMap<Employee, EmployeeDto>()
             .ForMember(dest => dest.DepartmentName,
                        opt => opt.MapFrom(src => src.Department != null ? src.Department.Name : "No Department"))
+            .ForMember(dest => dest.DepartmentId,
+                       opt => opt.MapFrom(src => src.DepartmentId))
+            .ForMember(dest => dest.ManagerId,
+                       opt => opt.MapFrom(src => src.ManagerId))
+            .ForMember(dest => dest.ManagerName,
+                       opt => opt.MapFrom(src => src.Manager != null ? src.Manager.GetFullName() : "No Manager"))
             .ForMember(dest => dest.AnnualSalary,
                        opt => opt.MapFrom(src => src.Salary * 12))
             .ForMember(dest => dest.Age,
@@ -37,10 +43,12 @@ public class MappingProfile : Profile
         CreateMap<CreateEmployeeDto, Employee>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.Now))
-            .ForMember(dest => dest.Department, opt => opt.Ignore());
+            .ForMember(dest => dest.Department, opt => opt.Ignore())
+            .ForMember(dest => dest.Manager, opt => opt.Ignore());
 
         CreateMap<Employee, CreateEmployeeDto>()
-            .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId));
+            .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId))
+            .ForMember(dest => dest.ManagerId, opt => opt.MapFrom(src => src.ManagerId));
 
         CreateMap<Manager, EmployeeDto>()
             .IncludeBase<Employee, EmployeeDto>()

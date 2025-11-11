@@ -29,12 +29,12 @@ public class Employee : Person
 
     public override string GetRoleDescription()
     {
-        return $"Employee working as {Position} in {Department?.Name ?? "No Department"} department";
+        return $"Employee working as {Position ?? "Unknown Position"} in {Department?.Name ?? "No Department"} department";
     }
 
     public override string GetFullName()
     {
-        return $"{EmployeeNumber}: {base.GetFullName()}";
+        return $"{EmployeeNumber ?? "Unknown"}: {base.GetFullName()}";
     }
 
     public decimal GetAnnualSalary()
@@ -45,6 +45,11 @@ public class Employee : Person
     public bool IsEligibleForPromotion()
     {
         var yearsOfService = DateTime.Now.Year - HireDate.Year;
+        // Adjust for whether the birthday has occurred this year
+        if (HireDate.Date > DateTime.Now.AddYears(-yearsOfService))
+        {
+            yearsOfService--;
+        }
         return yearsOfService >= 2 && IsActive;
     }
 

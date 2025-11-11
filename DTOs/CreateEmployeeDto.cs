@@ -56,6 +56,10 @@ public class CreateEmployeeDto
     [Display(Name = "Is Active")]
     public bool IsActive { get; set; } = true;
 
+    [Required(ErrorMessage = "Department is required")]
     [Display(Name = "Department")]
-    public int? DepartmentId { get; set; }
+    public int DepartmentId { get; set; }
+
+    [Display(Name = "Manager")]
+    public int? ManagerId { get; set; }
 }

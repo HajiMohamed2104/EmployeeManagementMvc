@@ -8,6 +8,7 @@ using WebApplication1.Models.Entities;
 using WebApplication1.Repositories;
 using WebApplication1.Exceptions;
 using WebApplication1.ViewModels;
+using System.Linq;
 
 namespace WebApplication1.Controllers;
 public class EmployeeController : Controller
@@ -58,6 +59,7 @@ public class EmployeeController : Controller
             var employeeDtos = _mapper.Map<IEnumerable<EmployeeDto>>(employees);
 
             ViewBag.Departments = await GetDepartmentSelectList();
+            ViewBag.DepartmentCount = (await _departmentRepository.GetAllAsync()).Count();
             ViewBag.CurrentFilter = searchString;
             ViewBag.DepartmentFilter = departmentFilter;
             ViewBag.MinSalary = minSalary;
@@ -112,6 +114,7 @@ public class EmployeeController : Controller
         try
         {
             ViewBag.Departments = await GetDepartmentSelectList();
+            ViewBag.Managers = await GetManagerSelectList();
             return View();
         }
         catch (Exception ex)
@@ -140,9 +143,14 @@ public class EmployeeController : Controller
 
                 var employee = _mapper.Map<Employee>(createEmployeeDto);
                 
-                if (createEmployeeDto.DepartmentId.HasValue)
+                if (createEmployeeDto.DepartmentId > 0)
                 {
-                    employee.Department = await _context.Departments.FindAsync(createEmployeeDto.DepartmentId.Value);
+                    employee.Department = await _context.Departments.FindAsync(createEmployeeDto.DepartmentId);
+                }
+
+                if (createEmployeeDto.ManagerId.HasValue && createEmployeeDto.ManagerId.Value > 0)
+                {
+                    employee.Manager = await _context.Managers.FindAsync(createEmployeeDto.ManagerId.Value);
                 }
 
                 await _employeeRepository.AddAsync(employee);
@@ -152,6 +160,7 @@ public class EmployeeController : Controller
             }
 
             ViewBag.Departments = await GetDepartmentSelectList();
+            ViewBag.Managers = await GetManagerSelectList();
             return View(createEmployeeDto);
         }
         catch (InvalidEmployeeDataException ex)
@@ -166,6 +175,7 @@ public class EmployeeController : Controller
         }
 
         ViewBag.Departments = await GetDepartmentSelectList();
+        ViewBag.Managers = await GetManagerSelectList();
         return View(createEmployeeDto);
     }
     public async Task<IActionResult> Edit(int? id)
@@ -185,6 +195,7 @@ public class EmployeeController : Controller
 
             var employeeDto = _mapper.Map<CreateEmployeeDto>(employee);
             ViewBag.Departments = await GetDepartmentSelectList();
+            ViewBag.Managers = await GetManagerSelectList();
             return View(employeeDto);
         }
         catch (EmployeeNotFoundException ex)
@@ -229,13 +240,22 @@ public class EmployeeController : Controller
 
                 _mapper.Map(createEmployeeDto, existingEmployee);
                 
-                if (createEmployeeDto.DepartmentId.HasValue)
+                if (createEmployeeDto.DepartmentId > 0)
                 {
-                    existingEmployee.Department = await _context.Departments.FindAsync(createEmployeeDto.DepartmentId.Value);
+                    existingEmployee.Department = await _context.Departments.FindAsync(createEmployeeDto.DepartmentId);
                 }
                 else
                 {
                     existingEmployee.Department = null;
+                }
+
+                if (createEmployeeDto.ManagerId.HasValue && createEmployeeDto.ManagerId.Value > 0)
+                {
+                    existingEmployee.Manager = await _context.Managers.FindAsync(createEmployeeDto.ManagerId.Value);
+                }
+                else
+                {
+                    existingEmployee.Manager = null;
                 }
 
                 await _employeeRepository.UpdateAsync(existingEmployee);
@@ -245,6 +265,7 @@ public class EmployeeController : Controller
             }
 
             ViewBag.Departments = await GetDepartmentSelectList();
+            ViewBag.Managers = await GetManagerSelectList();
             return View(createEmployeeDto);
         }
         catch (EmployeeNotFoundException ex)
@@ -264,6 +285,7 @@ public class EmployeeController : Controller
         }
 
         ViewBag.Departments = await GetDepartmentSelectList();
+        ViewBag.Managers = await GetManagerSelectList();
         return View(createEmployeeDto);
     }
 
@@ -351,5 +373,15 @@ public class EmployeeController : Controller
     {
         var departments = await _departmentRepository.GetAllAsync();
         return new SelectList(departments, "Id", "Name");
+    }
+
+    private async Task<SelectList> GetManagerSelectList()
+    {
+        var managers = await _context.Managers
+            .Include(m => m.Department)
+            .Where(m => m.IsActive)
+            .ToListAsync();
+        
+        return new SelectList(managers, "Id", "GetFullName");
     }
 }

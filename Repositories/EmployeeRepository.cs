@@ -67,9 +67,21 @@ public class EmployeeRepository : Repository<Employee>, IEmployeeRepository
 
     public async Task<decimal> GetAverageSalaryByDepartmentAsync(string department)
     {
-        return await _dbSet
-            .Where(e => e.Department != null && e.Department.Name.Equals(department, StringComparison.OrdinalIgnoreCase) && e.IsActive)
-            .AverageAsync(e => e.Salary);
+        try
+        {
+            return await _dbSet
+                .Where(e => e.Department != null && e.Department.Name.Equals(department, StringComparison.OrdinalIgnoreCase) && e.IsActive)
+                .AverageAsync(e => e.Salary);
+        }
+        catch (InvalidOperationException)
+        {
+            // No employees found in the department
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            throw new EmployeeManagementException($"Error calculating average salary for department {department}", ex);
+        }
     }
 
     public async Task<IEnumerable<Employee>> GetTopEarnersAsync(int count)

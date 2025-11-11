@@ -87,24 +87,7 @@ public class ApplicationDbContext : DbContext
     {
         try
         {
-            var entries = ChangeTracker.Entries()
-                .Where(e => e.Entity is Employee && (e.State == EntityState.Added || e.State == EntityState.Modified));
-
-            foreach (var entry in entries)
-            {
-                var employee = (Employee)entry.Entity;
-                
-                if (employee.Salary < 0)
-                {
-                    throw new InvalidOperationException("Salary cannot be negative");
-                }
-
-                if (employee.HireDate > DateTime.Now)
-                {
-                    throw new InvalidOperationException("Hire date cannot be in the future");
-                }
-            }
-
+            ValidateEntities();
             return base.SaveChanges();
         }
         catch (Exception ex)
@@ -117,13 +100,24 @@ public class ApplicationDbContext : DbContext
     {
         try
         {
-            var entries = ChangeTracker.Entries()
-                .Where(e => e.Entity is Employee && (e.State == EntityState.Added || e.State == EntityState.Modified));
+            ValidateEntities();
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while saving changes", ex);
+        }
+    }
 
-            foreach (var entry in entries)
+    private void ValidateEntities()
+    {
+        var employeeEntries = ChangeTracker.Entries()
+            .Where(e => e.Entity is Employee && (e.State == EntityState.Added || e.State == EntityState.Modified));
+
+        foreach (var entry in employeeEntries)
+        {
+            if (entry.Entity is Employee employee)
             {
-                var employee = (Employee)entry.Entity;
-                
                 if (employee.Salary < 0)
                 {
                     throw new InvalidOperationException("Salary cannot be negative");
@@ -133,13 +127,26 @@ public class ApplicationDbContext : DbContext
                 {
                     throw new InvalidOperationException("Hire date cannot be in the future");
                 }
-            }
 
-            return await base.SaveChangesAsync(cancellationToken);
+                if (employee.DateOfBirth > DateTime.Now.AddYears(-16))
+                {
+                    throw new InvalidOperationException("Employee must be at least 16 years old");
+                }
+            }
         }
-        catch (Exception ex)
+
+        var managerEntries = ChangeTracker.Entries()
+            .Where(e => e.Entity is Manager && (e.State == EntityState.Added || e.State == EntityState.Modified));
+
+        foreach (var entry in managerEntries)
         {
-            throw new Exception("An error occurred while saving changes", ex);
+            if (entry.Entity is Manager manager)
+            {
+                if (manager.Bonus < 0)
+                {
+                    throw new InvalidOperationException("Bonus cannot be negative");
+                }
+            }
         }
     }
 }

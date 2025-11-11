@@ -30,12 +30,12 @@ public class Contractor : Person
 
     public override string GetRoleDescription()
     {
-        return $"Contractor from {Company} specializing in {Specialty}";
+        return $"Contractor from {Company ?? "Unknown Company"} specializing in {Specialty ?? "Unknown Specialty"}";
     }
 
     public override string GetFullName()
     {
-        return $"{ContractorNumber}: {base.GetFullName()} (Contractor)";
+        return $"{ContractorNumber ?? "Unknown"}: {base.GetFullName()} (Contractor)";
     }
 
     public decimal GetContractValue(int estimatedHours)

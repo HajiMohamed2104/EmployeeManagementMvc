@@ -45,7 +45,7 @@ public abstract class Person : IPerson
 
     public virtual string GetFullName()
     {
-        return $"{FirstName} {LastName}";
+        return $"{FirstName ?? ""} {LastName ?? ""}".Trim();
     }
 
     public abstract string GetRoleDescription();
